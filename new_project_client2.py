@@ -1,19 +1,15 @@
-# import library
 import pygame
-import random
 from network import Network
-
-n = Network()
-
-clientNumber = 0
 
 pygame.init()
 
-# Setting window size
-win_x = 800
-win_y = 500
+n = Network()
+clientNumber = 0
 
-win = pygame.display.set_mode((win_x, win_y))
+width = 800
+height = 500
+
+win = pygame.display.set_mode((width, height))
 pygame.display.set_caption('Игрок 2')
 
 def read_position(s):
@@ -52,6 +48,7 @@ class drawing(object):
             self.color = (0, 255, 0)
         elif pos[3] == "bl":
             self.color = (0, 0, 255)
+
 
         pygame.draw.circle(win, self.color, (pos[0], pos[1]), self.rad)
         if self.color == (255, 255, 255):
@@ -98,8 +95,7 @@ def drawHeader(win):
                           int(26 / 2 - canvasText.get_height() / 2) + 2))
 
 
-def draw(win):
-    # pygame.draw.rect(win, (0, 0, 0), (400, 0, 100, 500),2)  # Drawing button space
+def drawWin(win):
     input_rect = pygame.Rect(0, 0, 800, 60)
     pygame.draw.rect(win, (252, 169, 230), input_rect)
     font = pygame.font.SysFont('comicsans', 30)
@@ -108,14 +104,7 @@ def draw(win):
 
     pygame.draw.rect(win, (252, 169, 230), (700, 60, 100, 340), )
     pygame.draw.rect(win, (252, 169, 230), (0, 60, 100, 340), )
-    pygame.draw.rect(win, (247, 15, 181), (100, 60, 600, 340), 3)  # Drawing canvas space
-    # drawHeader(win)
-
-    for button in Buttons_color:
-        button.draw(win)
-
-    for button in Buttons_other:
-        button.draw(win)
+    pygame.draw.rect(win, (247, 15, 181), (100, 60, 600, 340), 3)  # drawing canvas space
 
     pygame.display.update()
 
@@ -127,18 +116,18 @@ def main():
     input_text = ""
 
     while run:
-        print(1)
         clock.tick(60)
 
-        p2Pos = n.send("0,0," + answer + ",b")
-        print(input_text)
-        if p2Pos != None:
-            p2Pos = read_position(p2Pos)
-            print(p2Pos)
-            #pygame.draw.circle(win, player1.color, (pos[0], pos[1]), player1.rad)
-            player1.draw(win, p2Pos)
+        playerInf = n.send("0,0," + answer + ",b")
+        if playerInf != None:
+            playerInf = read_position(playerInf)
+            if playerInf[3] == "quit":
+                run = False
+                break
+            player1.draw(win, playerInf)
 
-
+        # handling text input
+        # ввод текста
         keys = pygame.key.get_pressed()
         draw_input_field(win, input_text)
         for event in pygame.event.get():
@@ -148,32 +137,12 @@ def main():
                 if event.key == pygame.K_BACKSPACE:
                     input_text = input_text[:-1]
                 elif event.key == pygame.K_RETURN:
-                    # Отправка текста на сервер
-                    # n.send(input_text)
                     answer = input_text
                     input_text = ""
-
                 else:
                     input_text += event.unicode
-            #input_text = handle_input(event, input_text)
 
-
-
-        draw(win)
-
-        if 0 < player1.tick < 40:
-            player1.tick += 1
-        else:
-            player1.tick = 0
-
-        if 0 < player1.time < 4001:
-            player1.time += 1
-        elif 4000 < player1.time < 4004:
-            gameOver()
-            player1.time = 4009
-        else:
-            player1.time = 0
-            player1.play = False
+        drawWin(win)
 
     pygame.quit()
 
