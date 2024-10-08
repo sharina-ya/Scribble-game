@@ -41,9 +41,6 @@ class Drawing(object):
         self.width = 10
         self.height = 10
         self.rad = 3
-        self.tick = 0
-        self.time = 0
-        self.play = False
 
     def draw(self, win, pos):
         #print(pos[0], pos[1], pos[2])
