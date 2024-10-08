@@ -2,8 +2,8 @@ import socket
 from _thread import *
 import sys
 
-# server = "192.168.41.16"
-server = "192.168.141.246"
+server = "192.168.41.16"
+#server = "192.168.141.246"
 port = 5555
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -22,14 +22,14 @@ print("Server started\nWaiting for connection")
 # считывает координаты рисование
 def read_position(s):
     s = s.split(",")
-    return (s[0]), (s[1])
+    return (s[0]), (s[1]), (s[2]), (s[3])
 
 # преобразовывает координаты в формат
 def make_position(tup):
-    return str(tup[0]) + "," + str(tup[1])
+    return str(tup[0]) + "," + str(tup[1]) + "," + str(tup[2]) + "," + str(tup[3])
 
 # позиции игроков по дефолту
-pos = [(0, 0),(100, 100)]
+pos = [(0, 0, "", "b"),(100, 100, "", "b")]
 
 # цикл работы клиентов
 # потоки и тд
@@ -52,10 +52,12 @@ def threaded_client(conn, player):
             if not data:
                 # не получаем инфы
                 print("Disconnected")
+                pos[player] = (0, 0, "", "b")
                 break
             else:
                 # определение от кого получили инфу о координатах
                 if player == 1:
+                    pos[0] = (pos[0][0], pos[0][1], data[2], pos[0][3])
                     # отправка от клиента 2
                     reply = pos[0]
                 else:
