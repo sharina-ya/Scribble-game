@@ -10,7 +10,7 @@ clientNumber = 0
 pygame.init()
 
 # Setting window size
-win_x = 500
+win_x = 800
 win_y = 500
 
 win = pygame.display.set_mode((win_x, win_y))
@@ -19,10 +19,10 @@ pygame.display.set_caption('Игрок 2')
 def read_position(s):
     #print(s)
     s = s.split(",")
-    return int(s[0]), int(s[1])
+    return int(s[0]), int(s[1]), (s[2]), (s[3])
 
 def make_position(tup):
-    return str(tup[0]) + "," + str(tup[1])
+    return str(tup[0]) + "," + str(tup[1]) + "," + str(tup[2]) + "," + str(tup[3])
 
 # Class for drawing
 class drawing(object):
@@ -32,7 +32,7 @@ class drawing(object):
         self.color = (0, 0, 0)
         self.width = 10
         self.height = 10
-        self.rad = 6
+        self.rad = 3
         self.tick = 0
         self.time = 0
         self.play = False
@@ -41,6 +41,18 @@ class drawing(object):
     def draw(self, win, pos):
         #print(pos[0], pos[1])
         #n.send(make_position((pos[0], pos[1])))
+
+        if pos[3] == "b":
+            self.color = (0, 0, 0)
+        elif pos[3] == "w":
+            self.color = (255, 255, 255)
+        elif pos[3] == "r":
+            self.color = (255, 0, 0)
+        elif pos[3] == "g":
+            self.color = (0, 255, 0)
+        elif pos[3] == "bl":
+            self.color = (0, 0, 255)
+
         pygame.draw.circle(win, self.color, (pos[0], pos[1]), self.rad)
         if self.color == (255, 255, 255):
             pygame.draw.circle(win, self.color, (pos[0], pos[1]), 20)
@@ -62,40 +74,42 @@ class button(object):
 
     # Class for drawing buttons
     def draw(self, win):
-
         pygame.draw.rect(win, self.color, (self.x, self.y,
                                            self.width, self.height), self.outline)
         font = pygame.font.SysFont('comicsans', 30)
         text = font.render(self.text, 1, self.color2)
-        pygame.draw.rect(win, (255, 255, 255), (410, 446, 80, 35))
+        # pygame.draw.rect(win, (255, 255, 255), (410, 446, 80, 35))
         # pygame.draw.rect(win, (255, 255, 255), (410, 308, 80, 35))
-        win.blit(text, (int(self.x +self.width / 2 - text.get_width( ) /2),
-                        int(self.y +self.height / 2 - text.get_height( ) /2)))
+        win.blit(text, (int(self.x + self.width / 2 - text.get_width() / 2),
+                        int(self.y + self.height / 2 - text.get_height() / 2)))
 
 
 def drawHeader(win):
     # Drawing header space
-    pygame.draw.rect(win, (175, 171, 171), (0, 0, 500, 25))
-    pygame.draw.rect(win, (0, 0, 0), (0, 0, 400, 25), 2)
-    pygame.draw.rect(win, (0, 0, 0), (400, 0, 100, 25), 2)
+    pygame.draw.rect(win, (175, 171, 171), (0, 0, 500, 40))
+    # pygame.draw.rect(win, (0, 0, 0), (0, 0, 400, 25), 2)
+    # pygame.draw.rect(win, (0, 0, 0), (-5, -5, 510, 40), 2)
 
     # Printing header
     font = pygame.font.SysFont('comicsans', 30)
 
-    canvasText = font.render('Canvas', 1, (0, 0, 0))
+    canvasText = font.render('Холст', 1, (0, 0, 0))
     win.blit(canvasText, (int(200 - canvasText.get_width() / 2),
                           int(26 / 2 - canvasText.get_height() / 2) + 2))
 
 
-
 def draw(win):
+    # pygame.draw.rect(win, (0, 0, 0), (400, 0, 100, 500),2)  # Drawing button space
+    input_rect = pygame.Rect(0, 0, 800, 60)
+    pygame.draw.rect(win, (252, 169, 230), input_rect)
+    font = pygame.font.SysFont('comicsans', 30)
+    text_surface = font.render("Вы угадываете", True, (179, 12, 131))
+    win.blit(text_surface, (30, 10))
 
-    pygame.draw.rect(win, (0, 0, 0), (400, 0, 100, 500),
-                     2)  # Drawing button space
-    pygame.draw.rect(win, (255, 255, 255), (400, 0, 100, 500) ,)
-    #pygame.draw.rect(win, (0, 0, 0), (0, 0, 400, 500),
-                     #2)  # Drawing canvas space
-    drawHeader(win)
+    pygame.draw.rect(win, (252, 169, 230), (700, 60, 100, 340), )
+    pygame.draw.rect(win, (252, 169, 230), (0, 60, 100, 340), )
+    pygame.draw.rect(win, (247, 15, 181), (100, 60, 600, 340), 3)  # Drawing canvas space
+    # drawHeader(win)
 
     for button in Buttons_color:
         button.draw(win)
@@ -106,19 +120,18 @@ def draw(win):
     pygame.display.update()
 
 
-
 def main():
     run = True
     clock = pygame.time.Clock()
-
+    answer = ""
     input_text = ""
-
 
     while run:
         print(1)
         clock.tick(60)
 
-        p2Pos = n.send("0,0")
+        p2Pos = n.send("0,0," + answer + ",b")
+        print(input_text)
         if p2Pos != None:
             p2Pos = read_position(p2Pos)
             print(p2Pos)
@@ -131,7 +144,18 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT or keys[pygame.K_ESCAPE]:
                 run = False
-            input_text = handle_input(event, input_text)
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE:
+                    input_text = input_text[:-1]
+                elif event.key == pygame.K_RETURN:
+                    # Отправка текста на сервер
+                    # n.send(input_text)
+                    answer = input_text
+                    input_text = ""
+
+                else:
+                    input_text += event.unicode
+            #input_text = handle_input(event, input_text)
 
 
 
@@ -193,11 +217,20 @@ def main():
     win.fill((255, 255, 255))'''
 
 def draw_input_field(win, input_text):
+    """
     input_rect = pygame.Rect(100, 450, 300, 40)
     pygame.draw.rect(win, (255, 255, 255), input_rect, 2)
     font = pygame.font.SysFont('comicsans', 30)
     text_surface = font.render(input_text, True, (0, 0, 0))
     win.blit(text_surface, (input_rect.x + 43, input_rect.y + 10))
+    """
+    input_rect = pygame.Rect(0, 400, 800, 120)
+    pygame.draw.rect(win, (252, 169, 230), input_rect)
+    font = pygame.font.SysFont('comicsans', 25)
+    text_surface1 = font.render("Введите ваш ответ:", True, (179, 12, 131))
+    text_surface2 = font.render(input_text, True, (179, 12, 131))
+    win.blit(text_surface1, (input_rect.x + 10, input_rect.y + 10))
+    win.blit(text_surface2, (input_rect.x + 10, input_rect.y + 50))
 
 # Функция для обработки ввода с клавиатуры
 def handle_input(event, input_text):
@@ -206,7 +239,7 @@ def handle_input(event, input_text):
             input_text = input_text[:-1]
         elif event.key == pygame.K_RETURN:
             # Отправка текста на сервер
-            n.send(input_text)
+            #n.send(input_text)
             input_text = ""
 
         else:
@@ -243,19 +276,16 @@ pos = (0, 0)
 # Defining color buttons
 
 
-blackButton = button(407, 168, 1, 1, (0, 0, 0), (0, 0, 0))
-
+whiteButton = button(720, 70, 60, 60, (255, 255, 255), (255, 255, 255))
+blackButton = button(720, 136, 60, 60, (0, 0, 0), (247, 15, 181))
+redButton = button(720, 202, 60, 60, (255, 0, 0), (255, 0, 0))
+blueButton = button(720, 268, 60, 60, (0, 0, 255), (0, 0, 255))
+greenButton = button(720, 334, 60, 60, (0, 255, 0), (0, 255, 0))
 
 # Defining other buttons
-clrButton = button(407, 214, 1, 1, (201, 201, 201), (0, 0, 0), 0, 1, '')
-
-
-playButton = button(407, 352, 1, 1, (201, 201, 201), (0, 0, 0), 0, 5, '')
-stopButton = button(407, 398, 1, 1, (201, 201, 201), (0, 0, 0), 0, 6, '')
-timeDisplay = button(407, 444, 86, 40, (0, 0, 0), (0, 0, 0), 1, 7, 'Time')
-
-Buttons_color = [blackButton]
-Buttons_other = [clrButton, playButton, stopButton, timeDisplay]
+Buttons_color = []
+#Buttons_other = [clrButton, smallerButton, biggerButton, playButton, stopButton, timeDisplay]
+Buttons_other = []
 
 if __name__ == "__main__":
     main()
