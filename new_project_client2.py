@@ -14,7 +14,7 @@ win_x = 500
 win_y = 500
 
 win = pygame.display.set_mode((win_x, win_y))
-pygame.display.set_caption('Paint')
+pygame.display.set_caption('Игрок 2')
 
 def read_position(s):
     #print(s)
@@ -45,53 +45,6 @@ class drawing(object):
         if self.color == (255, 255, 255):
             pygame.draw.circle(win, self.color, (pos[0], pos[1]), 20)
 
-    # detecting clicks
-    def click(self, win, list, list2):
-        pos = pygame.mouse.get_pos()  # Localização do mouse
-
-        if pygame.mouse.get_pressed() == (1, 0, 0) and pos[0] < 400:
-            if pos[1] > 25:
-                self.draw(win, pos)
-        elif pygame.mouse.get_pressed() == (1, 0, 0):
-            for button in list:
-                if pos[0] > button.x and pos[0] < button.x + button.width:
-                    if pos[1] > button.y and pos[1] < button.y + button.height:
-                        self.color = button.color2
-            for button in list2:
-                if pos[0] > button.x and pos[0] < button.x + button.width:
-                    if pos[1] > button.y and pos[1] < button.y + button.height:
-                        if self.tick == 0:
-                            if button.action == 1:
-                                win.fill((255, 255, 255))
-                                self.tick += 1
-                            if button.action == 2 and self.rad > 4:
-                                self.rad -= 1
-                                self.tick += 1
-                                pygame.draw.rect(
-                                    win, (255, 255, 255), (410, 308, 80, 35))
-
-                            if button.action == 3 and self.rad < 20:
-                                self.rad += 1
-                                self.tick += 1
-                                pygame.draw.rect(
-                                    win, (255, 255, 255), (410, 308, 80, 35))
-
-                            if button.action == 5 and self.play == False:
-                                self.play = True
-                                game()
-                                self.time += 1
-                            if button.action == 6:
-                                self.play = False
-                                self.time = 0
-
-        for button in list2:
-            if button.action == 4:
-                button.text = str(self.rad)
-
-            if button.action == 7 and self.play == True:
-                button.text = str(40 - (player1.time // 100))
-            if button.action == 7 and self.play == False:
-                button.text = 'Time'
 
 # Class for buttons
 class button(object):
@@ -133,19 +86,15 @@ def drawHeader(win):
     win.blit(canvasText, (int(200 - canvasText.get_width() / 2),
                           int(26 / 2 - canvasText.get_height() / 2) + 2))
 
-    toolsText = font.render('Tools', 1, (0, 0, 0))
-    win.blit(toolsText, (int(450 - toolsText.get_width() / 2),
-                         int(26 / 2 - toolsText.get_height() / 2 + 2)))
 
 
 def draw(win):
-    player1.click(win, Buttons_color, Buttons_other)
 
     pygame.draw.rect(win, (0, 0, 0), (400, 0, 100, 500),
                      2)  # Drawing button space
     pygame.draw.rect(win, (255, 255, 255), (400, 0, 100, 500) ,)
-    pygame.draw.rect(win, (0, 0, 0), (0, 0, 400, 500),
-                     2)  # Drawing canvas space
+    #pygame.draw.rect(win, (0, 0, 0), (0, 0, 400, 500),
+                     #2)  # Drawing canvas space
     drawHeader(win)
 
     for button in Buttons_color:
@@ -157,9 +106,14 @@ def draw(win):
     pygame.display.update()
 
 
+
 def main():
     run = True
     clock = pygame.time.Clock()
+
+    input_text = ""
+
+
     while run:
         print(1)
         clock.tick(60)
@@ -173,9 +127,13 @@ def main():
 
 
         keys = pygame.key.get_pressed()
+        draw_input_field(win, input_text)
         for event in pygame.event.get():
             if event.type == pygame.QUIT or keys[pygame.K_ESCAPE]:
                 run = False
+            input_text = handle_input(event, input_text)
+
+
 
         draw(win)
 
@@ -196,7 +154,7 @@ def main():
     pygame.quit()
 
 
-def game():
+'''def game():
     object = ['Casa', 'cachoro', 'caneta', 'bola de futebol', 'caneca', 'Computador',
               'Chocolate', 'Jesus', 'Celular', 'Iphone', 'Teclado(instrumento)', 'teclado(computador)']
 
@@ -232,7 +190,29 @@ def game():
             if event.type == pygame.QUIT:
                 i = 1001
                 pygame.quit()
-    win.fill((255, 255, 255))
+    win.fill((255, 255, 255))'''
+
+def draw_input_field(win, input_text):
+    input_rect = pygame.Rect(100, 450, 300, 40)
+    pygame.draw.rect(win, (255, 255, 255), input_rect, 2)
+    font = pygame.font.SysFont('comicsans', 30)
+    text_surface = font.render(input_text, True, (0, 0, 0))
+    win.blit(text_surface, (input_rect.x + 43, input_rect.y + 10))
+
+# Функция для обработки ввода с клавиатуры
+def handle_input(event, input_text):
+    if event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_BACKSPACE:
+            input_text = input_text[:-1]
+        elif event.key == pygame.K_RETURN:
+            # Отправка текста на сервер
+            n.send(input_text)
+            input_text = ""
+
+        else:
+            input_text += event.unicode
+    return input_text
+
 
 # Ending Function
 def gameOver():
@@ -261,29 +241,21 @@ win.fill((255, 255, 255))
 pos = (0, 0)
 
 # Defining color buttons
-redButton = button(453, 30, 40, 40, (255, 0, 0), (255, 0, 0))
-blueButton = button(407, 30, 40, 40, (0, 0, 255), (0, 0, 255))
-greenButton = button(407, 76, 40, 40, (0, 255, 0), (0, 255, 0))
-orangeButton = button(453, 76, 40, 40, (255, 192, 0), (255, 192, 0))
-yellowButton = button(407, 122, 40, 40, (255, 255, 0), (255, 255, 0))
-purpleButton = button(453, 122, 40, 40, (112, 48, 160), (112, 48, 160))
-blackButton = button(407, 168, 40, 40, (0, 0, 0), (0, 0, 0))
-whiteButton = button(453, 168, 40, 40, (0, 0, 0), (255, 255, 255), 1)
+
+
+blackButton = button(407, 168, 1, 1, (0, 0, 0), (0, 0, 0))
+
 
 # Defining other buttons
-clrButton = button(407, 214, 86, 40, (201, 201, 201), (0, 0, 0), 0, 1, 'Clear')
+clrButton = button(407, 214, 1, 1, (201, 201, 201), (0, 0, 0), 0, 1, '')
 
-smallerButton = button(407, 260, 40, 40, (201, 201, 201), (0, 0, 0), 0, 2, '-')
-biggerButton = button(453, 260, 40, 40, (201, 201, 201), (0, 0, 0), 0, 3, '+')
-sizeDisplay = button(407, 306, 86, 40, (0, 0, 0), (0, 0, 0), 1, 4, 'Size')
-playButton = button(407, 352, 86, 40, (201, 201, 201), (0, 0, 0), 0, 5, 'Play')
-stopButton = button(407, 398, 86, 40, (201, 201, 201), (0, 0, 0), 0, 6, 'Stop')
+
+playButton = button(407, 352, 1, 1, (201, 201, 201), (0, 0, 0), 0, 5, '')
+stopButton = button(407, 398, 1, 1, (201, 201, 201), (0, 0, 0), 0, 6, '')
 timeDisplay = button(407, 444, 86, 40, (0, 0, 0), (0, 0, 0), 1, 7, 'Time')
 
-Buttons_color = [blueButton, redButton, greenButton, orangeButton,
-                 yellowButton, purpleButton, blackButton, whiteButton]
-Buttons_other = [clrButton, smallerButton, biggerButton,
-                 sizeDisplay, playButton, stopButton, timeDisplay]
+Buttons_color = [blackButton]
+Buttons_other = [clrButton, playButton, stopButton, timeDisplay]
 
 if __name__ == "__main__":
     main()
