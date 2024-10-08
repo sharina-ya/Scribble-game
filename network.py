@@ -7,11 +7,12 @@ class Network:
         #self.server = "192.168.141.246"
         self.port = 5555
         self.addr = (self.server, self.port)
-        self.pos = self.connect()
+        self.info = self.connect()
 
-    def getPos(self):
-        return self.pos
+    def getInfo(self):
+        return self.info
 
+    # client connets to server and receive info from server
     # клиент запрашивает подключении к серверу и считывает инфу от сервера
     def connect(self):
         try:
@@ -20,6 +21,8 @@ class Network:
         except:
             pass
 
+    # client sends info to server and receive data from server
+    # клиент отправляет данные на сервер и получает данные с сервера
     def send(self, data):
         try:
             self.client.send(str.encode(data))
