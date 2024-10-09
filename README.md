@@ -1,6 +1,6 @@
 # README
 
-## Project Title: Multiplayer Drawing Guessing Game
+## Project Title: Scribble game
 
 ### Introduction
 
