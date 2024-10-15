@@ -18,28 +18,6 @@ This repository contains a Python-based multiplayer drawing and guessing game, u
 
 - Game Reset: The game automatically resets after each round, allowing players to continue playing without manual intervention.
 
-### Installation
-
-To set up the project locally, follow these instructions:
-
-1. Clone the Repository:
-   
-   git clone https://github.com/yourusername/multiplayer-drawing-game.git
-   
-   
-   
-2. Navigate to Project Directory:
-   
-   cd multiplayer-drawing-game
-
-   
-
-3. Install Required Packages:
-   Ensure you have Python installed (version 3.6 or higher). Install the required libraries using pip:
-   
-   pip install PyQt5
-   
-   
 
 ### Usage
 
@@ -70,20 +48,3 @@ To set up the project locally, follow these instructions:
   - PyQt5: For creating the graphical user interface.
   
 - Game Logic: The server manages game state and word assignments while ensuring communication between both clients. Upon a draw and subsequent guess, the server handles the validation and informs both players accordingly.
-
-### Contributing
-
-Contributions are welcome! Please ensure your contributions align with the project's objectives. To contribute:
-
-1. Fork the repository.
-2. Create a new branch for your feature or fix.
-3. Commit your changes and push to your fork.
-4. Submit a pull request.
-
-### License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-### Acknowledgements
-
-We would like to thank the open-source community for their invaluable contributions to software development and for providing resources that facilitated the completion of this project.
