@@ -12,11 +12,11 @@ This repository contains a Python-based multiplayer drawing and guessing game, u
   
 - Real-Time Interaction: The game operates in real-time, allowing seamless interaction between the drawing player and the guessing player.
 
-- Random Word Assignment: The server randomly assigns a word to the drawing player, ensuring that each round is unique.
+- Random Word Assignment: The server randomly assigns a word to the drawing player.
 
 - Victory Display: Upon a successful guess, both players receive a notification of victory, enhancing engagement and excitement.
 
-- Game Reset: The game automatically resets after each round, allowing players to continue playing without manual intervention.
+- Game Reset: The game automatically resets after each round.
 
 
 ### Usage
