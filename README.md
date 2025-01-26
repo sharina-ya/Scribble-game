@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/ed8b3891-c1a6-41ac-91e2-bf1c1609cd05)# README
+# README
 
 ## Scribble game
 
